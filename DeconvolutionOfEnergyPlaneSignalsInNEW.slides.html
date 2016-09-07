@@ -6512,85 +6512,6 @@ wH8B3S7jb6LAy0QAAAAASUVORK5CYII=
 </div>
 
 </div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">FEParam</span> <span class="kn">as</span> <span class="nn">FP</span>
-<span class="kn">from</span> <span class="nn">Util</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
-<span class="kn">import</span> <span class="nn">SPE</span> <span class="kn">as</span> <span class="nn">SP</span>
-
- 
-
-<span class="c1">###########################################################</span>
-
-<span class="k">def</span> <span class="nf">FilterCutoffFrequency</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="mi">4700</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">8e-9</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Takes R (in Ohms) and C (in Farad) and returns frequency in Htz</span>
-<span class="sd">	&quot;&quot;&quot;</span>
-	
-	<span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">C</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">Filter</span><span class="p">:</span>
-
- 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span><span class="n">fc</span><span class="o">=</span><span class="mf">5E3</span><span class="p">,</span><span class="n">fs</span><span class="o">=</span> <span class="mf">1e+9</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Defines a Butterworth HPF (high pass frequency) or LPF (low pass frequencey) filter </span>
-<span class="sd">		the default sampling frequencey is 1 GHz (inverse of 1 ns time)</span>
-<span class="sd">		type may be equal to hig or low</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">fc</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">analog</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">)</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">ba</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aa</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">analog</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">)</span>
-
-	<span class="k">def</span> <span class="nf">FilterCoef</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Returns the filter coefficients</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-  		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span>
-
-  	<span class="k">def</span> <span class="nf">FilterAnalogCoef</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Returns the filter coefficients</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-  		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ba</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">aa</span>
-
-	<span class="k">def</span> <span class="nf">FilterPulse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pulse</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Filters a pulse</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-  		<span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="n">pulse</span><span class="p">)</span>
-
-  	<span class="k">def</span> <span class="nf">FilterResponse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-  		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  		Gives the response of the filter y frequency-amplitude</span>
-<span class="sd">  		&quot;&quot;&quot;</span>
-
-  		<span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ba</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aa</span><span class="p">)</span>
-  		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span>
-
-
-	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-		<span class="n">s</span><span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">		Filter:</span>
-<span class="s2">		fc = </span><span class="si">%7.2f</span><span class="s2"> Hz, fs = </span><span class="si">%7.2f</span><span class="s2">, W = </span><span class="si">%7.2f</span><span class="s2"> Hz type = </span><span class="si">%s</span><span class="s2">  </span>
-<span class="s2">		&quot;&quot;&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
-		<span class="k">return</span> <span class="n">s</span>
-
-	
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
@@ -6599,55 +6520,6 @@ wH8B3S7jb6LAy0QAAAAASUVORK5CYII=
 <h2 id="The-effect-of-filters-in-signals">The effect of filters in signals<a class="anchor-link" href="#The-effect-of-filters-in-signals">&#182;</a></h2>
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">FilterScan</span><span class="p">(</span><span class="n">spe</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
-  	<span class="n">spe_pulse_t</span><span class="p">,</span> <span class="n">spe_pulse</span> <span class="o">=</span> <span class="n">spe</span><span class="o">.</span><span class="n">SpePulse</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">ns</span><span class="p">)</span>
-	<span class="k">print</span> <span class="s2">&quot;Capacitance of filter (nF) = </span><span class="si">%7.2f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">C</span><span class="o">/</span><span class="n">nF</span><span class="p">)</span>
-
-	<span class="n">Ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-    
-  	<span class="k">for</span> <span class="n">R</span> <span class="ow">in</span> <span class="n">Ra</span><span class="p">:</span>
-  		<span class="k">print</span> <span class="s2">&quot;Resistance of filter (O) = </span><span class="si">%7.2f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
-
-  		<span class="n">freq_HPF</span> <span class="o">=</span> <span class="n">FilterCutoffFrequency</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="n">R</span><span class="o">*</span><span class="n">ohm</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">)</span>
-  		<span class="k">print</span> <span class="s2">&quot;cutoff frequence (kHz) = </span><span class="si">%7.2f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">freq_HPF</span><span class="o">/</span><span class="mf">1e+3</span><span class="p">)</span>
-  		<span class="n">hpf</span> <span class="o">=</span> <span class="n">Filter</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span><span class="n">fc</span><span class="o">=</span><span class="n">freq_HPF</span><span class="p">,</span><span class="n">fs</span><span class="o">=</span><span class="n">f_sample</span><span class="p">)</span>
-  		<span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">hpf</span><span class="o">.</span><span class="n">FilterResponse</span><span class="p">()</span>
-  		<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-		<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-		<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;HPF  frequency response&#39;</span><span class="p">)</span>
-		<span class="n">SetPlotLabels</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Frequency [radians / second]&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Amplitude [dB]&#39;</span><span class="p">)</span>
-
-		<span class="n">plt</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-		<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">freq_HPF</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span> <span class="c1"># cutoff frequency</span>
-		<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">h</span><span class="p">)))</span>
-
-		<span class="n">spe_hp_pulse</span> <span class="o">=</span> <span class="n">hpf</span><span class="o">.</span><span class="n">FilterPulse</span><span class="p">(</span><span class="n">spe_pulse</span><span class="p">)</span>
-
-		<span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-		<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
-		<span class="n">SetPlotLabels</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;t (ns)&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;I (muA)&#39;</span><span class="p">)</span>
-  		<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;SPE pulse&#39;</span><span class="p">)</span>
-		<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spe_pulse_t</span><span class="o">/</span><span class="n">ns</span><span class="p">,</span> <span class="n">spe_pulse</span><span class="o">/</span><span class="n">microampere</span><span class="p">)</span>
-
-		<span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-		<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
-		<span class="n">SetPlotLabels</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;t (ns)&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;I (muA)&#39;</span><span class="p">)</span>
-  		<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;SPE pulse after HPF&#39;</span><span class="p">)</span>
-		<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spe_pulse_t</span><span class="p">,</span> <span class="n">spe_hp_pulse</span><span class="o">/</span><span class="n">microampere</span><span class="p">)</span>
-
-		<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
@@ -6660,23 +6532,11 @@ wH8B3S7jb6LAy0QAAAAASUVORK5CYII=
 </div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[61]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="n">spe</span> <span class="o">=</span> <span class="n">SP</span><span class="o">.</span><span class="n">SPE</span><span class="p">(</span><span class="n">pmt_gain</span><span class="o">=</span><span class="n">FP</span><span class="o">.</span><span class="n">PMT_GAIN</span><span class="p">,</span><span class="n">x_slope</span> <span class="o">=</span> <span class="mi">5</span><span class="o">*</span><span class="n">ns</span><span class="p">,</span><span class="n">x_flat</span> <span class="o">=</span> <span class="mi">1</span><span class="o">*</span><span class="n">ns</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">FilterCharacterization</span><span class="p">(</span><span class="n">spe</span><span class="p">)</span>
+<span class="n">FilterCharacterization</span><span class="p">(</span><span class="n">spe</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -10153,7 +10013,7 @@ hhAREWmGIURERJphCBERkWYYQkREpBmGEBERaeb/AUebaYiAFDUSAAAAAElFTkSuQmCC
 
 </div>
 </div>
-</div>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
@@ -11522,34 +11382,7 @@ wCEiIl0wcIiISBf/Byzpj8TLKwPRAAAAAElFTkSuQmCC
 
 </div>
 </div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[43]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">ls</span> <span class="s1">&#39;/Users/jjgomezcadenas/Documents/Development/NEXT/data/Waveforms/25ns/WF_Na_test_RWF.h5&#39;</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>/Users/jjgomezcadenas/Documents/Development/NEXT/data/Waveforms/25ns/WF_Na_test_RWF.h5
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div><div class="fragment">
+</div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[46]:</div>
@@ -11562,7 +11395,7 @@ wCEiIl0wcIiISBf/Byzpj8TLKwPRAAAAAElFTkSuQmCC
 </div>
 </div>
 
-</div></div></section><section>
+</div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[47]:</div>
@@ -12477,13 +12310,13 @@ UfJJ+CEmIiJKTgwIIiLSxIAgIiJNDAgiItLEgCAiIk0MCCIi0sSAICIiTQwIIiLS9P8BOTmvm8bx
 </div>
 </div>
 
-</div>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Outlook">Outlook<a class="anchor-link" href="#Outlook">&#182;</a></h2><ol>
+<h2 id="Summary">Summary<a class="anchor-link" href="#Summary">&#182;</a></h2><ol>
 <li><p>DBLR algorithm performs well, but parameters must be carefully tuned.</p>
 </li>
 <li><p>The effect on the energy resolution appears to be small, but needs to be fully quantified.</p>
@@ -12496,40 +12329,80 @@ UfJJ+CEmIiJKTgwIIiLSxIAgIiJNDAgiItLEgCAiIk0MCCIi0sSAICIiTQwIIiLS9P8BOTmvm8bx
 </li>
 <li><p>Currently ART does not include neither the simulation of the FEE nor the deconvolution.</p>
 </li>
-<li><p>Discussion on how to proceed: --&gt; Tomorrow (sotware meeting)</p>
+</ol>
+
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="How-to-proceed?">How to proceed?<a class="anchor-link" href="#How-to-proceed?">&#182;</a></h2><ol>
+<li><p>For MC</p>
 </li>
-<li><p>Decission on how to proceed: --&gt; Friday (Tecnical Board)</p>
+<li><p>For Data</p>
 </li>
 </ol>
 
 </div>
 </div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span> 
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="For-Monte-Carlo">For Monte Carlo<a class="anchor-link" href="#For-Monte-Carlo">&#182;</a></h3><ol>
+<li><p>hdf5 module already operative in art chain (JMB).</p>
+</li>
+<li><p>It allows to write MCRD files using HDF5 and ZLIB compression (250 kB per event to be compared with 10 MB per event in the case of GATE DST).</p>
+</li>
+<li><p>HDF5 MCRD code is the input for the simulation of the FEE plane (SIERPE) which produces Raw Waveforms (RWF), writting a new HDF5 file. The DBLR algorithm then produces Corrected Waveforms (CWF).</p>
+</li>
+<li><p>A new module (to be written by JMB) can simply read the resulting file containing the CWF and pass them along to the next ART module.</p>
+</li>
+</ol>
 
 </div>
 </div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
 </div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span> 
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="For-Data">For Data<a class="anchor-link" href="#For-Data">&#182;</a></h3><ol>
+<li><p>Write RWF in hdf5 format (module already avaialble).</p>
+</li>
+<li><p>Pass DBLR algorithm and produce CWF.</p>
+</li>
+<li><p>Read back to art.</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img align="center" src="images/thanks.jpg" width="400" ></img></p>
 
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 
+</div>
+</div>
 </div></section></section>
 </div>
 </div>
